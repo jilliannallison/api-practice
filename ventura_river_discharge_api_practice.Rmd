@@ -1,0 +1,34 @@
+---
+title: "Ventura River Discharge"
+output: html_document
+date: "2022-08-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dataRetrieval)
+library(tidyverse)
+library(janitor)
+```
+
+```{r}
+sitenumber <- "11118500"
+parametercd <- "00060"
+startdate <- "2019-10-01"
+enddate <- "2020-10-05"
+discharge <- readNWISdv(sitenumber,
+                        parametercd, 
+                        startdate,
+                        enddate) %>%
+  clean_names()
+```
+
+```{r}
+ggplot(data = discharge,
+       aes(x = date, y = x_00060_00003)) + 
+  geom_line() + 
+  labs(x = "Date",
+       y = "Discharge (cfs)") + 
+  theme_minimal()
+```
+

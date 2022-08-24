@@ -1,0 +1,53 @@
+---
+title: "English speakers in AK"
+output: html_document
+date: "2022-08-24"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(metajam)
+library(tidyverse)
+```
+
+### Downloading and reading data files using metajam functions
+```{r}
+
+data <- "https://knb.ecoinformatics.org/knb/d1/mn/v2/object/urn%3Auuid%3A7fc6f6db-c5ea-426a-a743-1f2edafb43b8"
+path <- "~/214/api-practice"
+
+#download_d1_data(data, path)
+
+household_language <- read_d1_files("~/214/api-practice/doi_10.5063_F1CJ8BPH__household_language__csv")
+```
+
+```{r}
+language_data <- household_language$data
+
+# Finding percent of all alaskan households who speak only english by year btwn 2009 and 2015
+
+english_only <- language_data %>%
+  filter(Year %in% c(2009:2015)) %>%
+  group_by(Year) %>%
+  summarize(pct_english = (sum(speak_only_english) / sum(total))*100)
+  
+
+# Trying another method to check my first answer
+english_only_2 <- language_data %>%
+  filter(Year %in% c(2009:2015)) %>%
+  group_by(Year) %>%
+  summarize(english = sum(speak_only_english),
+           total = sum(total)) %>%
+  mutate(pct_english = english/total)
+
+```
+
+```{r}
+ggplot(data = english_only, 
+       aes(x = Year, 
+           y = pct_english)) + 
+  geom_line() + 
+  theme_minimal() 
+```
+
+
